@@ -1,0 +1,18 @@
+{
+  "name": "Example Gmail Extension",
+  "description": "Example extension showing use of the Streak Gmail SDK",
+  "version": "0.1",
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["contentScript.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["scripting"],
+  "host_permissions": ["https://mail.google.com/"],
+  "manifest_version": 3
+}
