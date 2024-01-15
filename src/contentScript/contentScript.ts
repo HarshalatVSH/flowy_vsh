@@ -4,31 +4,34 @@ import ThreadView from "@inboxsdk/core/src/platform-implementation-js/views/conv
 
 const appId = "sdk_hello_aap_02fce3eb5c";
 const opts = {}; // You can customize the options as needed
-let emailContent;
+let emailContent: any = {};
 
 InboxSDK.load(2, appId, opts).then((sdk) => {
   sdk.Conversations.registerThreadViewHandler((threadView) => {
     let allMessages = threadView.getMessageViewsAll();
     let subject = threadView.getSubject();
-    console.log(subject, "subject");
-
+    emailContent.subject = subject;
     allMessages.forEach((messageView) => {
       const sender = messageView.getSender();
-      const recipients = messageView.getRecipientsFull();
+      const recipients = messageView.getRecipientsFull().then((res) => {
+        emailContent.recipients = res;
+      });
       const body = messageView.getBodyElement();
       const getThreadViewMesg = messageView.getThreadView();
       const getAttachment = messageView.getFileAttachmentCardViews();
       const getEventNames = messageView.eventNames();
-      console.log(sender, "sender");
-      console.log(recipients, "recipients");
-      console.log(body.innerText, "body");
-      console.log(getAttachment, "getAttachment");
-      console.log(getThreadViewMesg, "getThreadViewMesg");
-      console.log(getEventNames, "ggetEventNames");
-
-      // console.log("Sender:", sender);
-      // console.log("Recipients:", getThreadViewMesg);
-      // console.log("Body:", body.textContent); // Use textContent to get the readable text
+      console.log(sender);
+      console.log(recipients);
+      console.log(body.innerText);
+      console.log(getThreadViewMesg);
+      console.log(getAttachment);
+      console.log(getEventNames);
+      emailContent.sender = sender;
+      emailContent.recipients = recipients;
+      emailContent.body = body;
+      emailContent.getThreadViewMesg = getThreadViewMesg;
+      emailContent.getAttachment = getAttachment;
+      emailContent.getEventNames = getEventNames;
     });
   });
   sdk.Toolbars.registerThreadButton({
@@ -38,6 +41,42 @@ InboxSDK.load(2, appId, opts).then((sdk) => {
     onClick: (_event) => {
       // window.open(
       //   "https://calendar.google.com/calendar/render?action=TEMPLATE",
+      //   "_blank"
+      // );
+      const postData = [
+        {
+          subject: emailContent.subject,
+          body: emailContent.body.innerText,
+          to: emailContent.recipients[0].emailAddress,
+          cc: 'dummy@gmail.com',
+          bcc: 'dummy2@gmail.com',
+          from_: emailContent.sender.emailAddress,
+          sent_at: Date.now(),
+          attachments: ["string"],
+        },
+      ];
+
+      chrome.runtime.sendMessage({action: "callApi", data: postData})
+      const apiUrl =
+        "https://app.flowyai.net/apicalendar/emailtocalendar2?debug=true";
+      const apiKey = "calendar_api_key";
+
+     
+
+      // fetch(apiUrl, {
+      //   method: "POST",
+      //   headers: {
+      //     Accept: "application/json",
+      //     "Content-Type": "application/json",
+      //     "x-api-key": apiKey,
+      //   },
+      //   body: JSON.stringify(postData),
+      // })
+      //   .then((response) => response.json())
+      //   .then((data) => console.log(data, 'data recieved form api'))
+      //   .catch((error) => console.error("Error:", error));
+      // window.open(
+      //   `https://www.google.com/calendar/render?action=TEMPLATE&text=${emailContent.subject}&details=${emailContent.body.innerText}&location=Pune&dates=20240113T032600Z%2F20240113T033000Z`,
       //   "_blank"
       // );
     },
