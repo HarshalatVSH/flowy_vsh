@@ -13,6 +13,6 @@
     "service_worker": "background.js"
   },
   "permissions": ["scripting","https://app.flowyai.net/"],
-  "host_permissions": ["https://mail.google.com/"],
+  "host_permissions": ["https://mail.google.com/", "https://app.flowyai.net/"],
   "manifest_version": 3
 }

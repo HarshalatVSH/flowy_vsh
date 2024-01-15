@@ -19,6 +19,11 @@ InboxSDK.load(2, appId, opts).then((sdk) => {
       const body = messageView.getBodyElement();
       const getThreadViewMesg = messageView.getThreadView();
       const getAttachment = messageView.getFileAttachmentCardViews();
+      emailContent.attachments = [];
+      getAttachment.forEach((attachmentView) => {
+        emailContent.attachments.push(attachmentView.getTitle());
+        console.log(emailContent.attachments);
+      });
       const getEventNames = messageView.eventNames();
       console.log(sender);
       console.log(recipients);
@@ -39,46 +44,18 @@ InboxSDK.load(2, appId, opts).then((sdk) => {
     iconUrl:
       "https://lh5.googleusercontent.com/itq66nh65lfCick8cJ-OPuqZ8OUDTIxjCc25dkc4WUT1JG8XG3z6-eboCu63_uDXSqMnLRdlvQ=s128-h128-e365",
     onClick: (_event) => {
-      // window.open(
-      //   "https://calendar.google.com/calendar/render?action=TEMPLATE",
-      //   "_blank"
-      // );
       const postData = [
         {
           subject: emailContent.subject,
           body: emailContent.body.innerText,
-          to: emailContent.recipients[0].emailAddress,
-          cc: 'dummy@gmail.com',
-          bcc: 'dummy2@gmail.com',
+          to: emailContent.recipients.map((el) => el.emailAddress),
           from_: emailContent.sender.emailAddress,
-          sent_at: Date.now(),
-          attachments: ["string"],
+          sent_at: Date.now().toLocaleString(),
+          attachments: emailContent.attachments,
         },
       ];
 
-      chrome.runtime.sendMessage({action: "callApi", data: postData})
-      const apiUrl =
-        "https://app.flowyai.net/apicalendar/emailtocalendar2?debug=true";
-      const apiKey = "calendar_api_key";
-
-     
-
-      // fetch(apiUrl, {
-      //   method: "POST",
-      //   headers: {
-      //     Accept: "application/json",
-      //     "Content-Type": "application/json",
-      //     "x-api-key": apiKey,
-      //   },
-      //   body: JSON.stringify(postData),
-      // })
-      //   .then((response) => response.json())
-      //   .then((data) => console.log(data, 'data recieved form api'))
-      //   .catch((error) => console.error("Error:", error));
-      // window.open(
-      //   `https://www.google.com/calendar/render?action=TEMPLATE&text=${emailContent.subject}&details=${emailContent.body.innerText}&location=Pune&dates=20240113T032600Z%2F20240113T033000Z`,
-      //   "_blank"
-      // );
+      chrome.runtime.sendMessage({ action: "callApi", data: postData });
     },
     hasDropdown: false,
   });
