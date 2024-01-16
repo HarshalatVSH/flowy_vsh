@@ -19,16 +19,45 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     })
       .then((response) => response.json())
       .then((data) => {
-        chrome.tabs.create({
-          url: `https://www.google.com/calendar/render?action=TEMPLATE&text=${
-            data.calendar_invite.summary
-          }&details=${data.calendar_invite.description}&location=${
-            data.calendar_invite.location
-          }&dates=${data.calendar_invite.start.dateTime}%${
-            data.calendar_invite.end.dateTime
-          }&add=${data.calendar_invite.attendees.map((el) => el.email)}`,
-        });
+        const { summary, description, location, start, end, attendees } =
+          data.calendar_invite;
+        const isNoneResponse =
+          summary === "None" &&
+          location === "None" &&
+          description === "None" &&
+          start === "None" &&
+          end === "None";
+        if (isNoneResponse) {
+          chrome.tabs.query(
+            { active: true, currentWindow: true },
+            function (tabs) {
+              const activeTab = tabs[0];
+              chrome.tabs.sendMessage(activeTab.id, {
+                action: "errorInResponse",
+              });
+            }
+          );
+          return;
+        } else {
+          chrome.tabs.create({
+            url: `https://www.google.com/calendar/render?action=TEMPLATE&text=${summary}&details=${description}&location=${location}&dates=${
+              start.dateTime
+            }%${end.dateTime}&add=${attendees.map((el) => el.email)}`,
+          });
+        }
       })
-      .catch((error) => console.error("Error:", error));
+      .catch((error) => {
+        chrome.tabs.query(
+          { active: true, currentWindow: true },
+          function (tabs) {
+            const activeTab = tabs[0];
+            chrome.tabs.sendMessage(activeTab.id, {
+              action: "errorInResponse",
+            });
+          }
+        );
+
+        console.error("Error:", error)
+      });
   }
 });

@@ -63,3 +63,53 @@ InboxSDK.load(2, appId, opts).then((sdk) => {
 // InboxSDK.load(2, appId, opts).then((sdk) => {
 
 // });
+
+function createErrorModal() {
+  const errorModal = document.createElement('div');
+  errorModal.id = "flowyErrorModal";
+  errorModal.innerHTML = '<p>Something went wrong!</p>';
+  errorModal.style.cssText = `
+  width: 145px;
+  font-size: 13px;
+  padding: 5px;
+  height: 45px;
+  background: rgb(255, 255, 255);
+  position: absolute;
+  z-index: 99999;
+  border-radius: 10px;
+  border: 1px solid rgb(176 173 173 / 32%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  display: block;
+  `;
+  document.body.appendChild(errorModal);
+}
+
+function toggleErrorModal(show) {
+  const errorModal = document.getElementById("flowyErrorModal");
+  if (errorModal) {
+    errorModal.style.display = show ? 'block' : 'none';
+  }
+}
+
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+ 
+  if (request.action === 'errorInResponse') {
+    const flowyButton = document.querySelector('div[data-tooltip="Flowy Magic"]');
+    const buttonRect = flowyButton.getBoundingClientRect();
+    if (!document.getElementById("flowyErrorModal")) {
+      createErrorModal();
+    }
+
+    const errorModal = document.getElementById("flowyErrorModal");
+    errorModal.style.top = `${buttonRect.bottom}px`;
+    errorModal.style.left = `${buttonRect.left}px`;
+    toggleErrorModal(true);
+  }
+});
+
+document.addEventListener('click', function (event) {
+  const errorModal:any = document.getElementById("flowyErrorModal");
+  if (errorModal && !errorModal.contains(event.target)) {
+    toggleErrorModal(false);
+  }
+});
