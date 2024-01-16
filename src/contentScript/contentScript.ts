@@ -104,6 +104,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     errorModal.style.top = `${buttonRect.bottom}px`;
     errorModal.style.left = `${buttonRect.left}px`;
     toggleErrorModal(true);
+    setTimeout(() => {
+      toggleErrorModal(false);
+    }, 2000);
   }
 });
 
