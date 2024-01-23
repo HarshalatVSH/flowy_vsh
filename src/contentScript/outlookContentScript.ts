@@ -1,6 +1,54 @@
 import { data } from "autoprefixer";
 
 let flowy;
+function createPopUp() {
+  const popupDiv = document.createElement("div");
+  const buttonDiv = document.createElement("div");
+  popupDiv.id = "popupDiv";
+  const high = document.createElement("button");
+  high.innerText = "High";
+  const medium = document.createElement("button");
+  medium.innerText = "Medium";
+  const low = document.createElement("button");
+  low.innerText = "Low";
+  buttonDiv.appendChild(high);
+  buttonDiv.appendChild(medium);
+  buttonDiv.appendChild(low);
+  popupDiv.style.cssText = `
+  width: 179px;
+  font-size: 13px;
+  padding: 5px;
+  height: 78px;
+  background: rgb(255, 255, 255);
+  position: absolute;
+  z-index: 99999;
+  border-radius: 10px;
+  border: 1px solid rgb(176 173 173 / 32%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  display: block;
+  `;
+  buttonDiv.style.cssText = `
+  display: flex;
+  justify-content: space-evenly;
+    align-items: center;
+  `;
+  const priority = document.createElement("p");
+  priority.innerText = "Priority";
+  priority.style.textAlign = "center";
+  popupDiv.appendChild(priority);
+  popupDiv.appendChild(buttonDiv);
+  document.body.appendChild(popupDiv);
+  high.addEventListener("click", () => {
+    console.log("high");
+  });
+  medium.addEventListener("click", () => {
+    console.log("medium");
+  });
+  low.addEventListener("click", () => {
+    console.log("low");
+  });
+}
+
 function createErrorModal() {
   const errorModal = document.createElement("div");
   errorModal.id = "flowyErrorModal";
@@ -113,13 +161,22 @@ function clickOnFlowyButton(flowyButton) {
       flowyButton.style.backgroundColor = "transparent";
       flowyButton.style.transform = "scale(1)";
     }, 300);
-    const emailMessage = flowyButton.closest("div[aria-label='Email message']");
-    const emailInfo = scrapeEmailInfo(emailMessage);
+    const buttonRect = flowyButton.getBoundingClientRect();
+    console.log("buttonRect", buttonRect);
+    if (!document.getElementById("popupDiv")) {
+      createPopUp();
+    }
 
-    chrome.runtime.sendMessage({
-      action: "emailToCalendar",
-      data: [emailInfo],
-    });
+    const errorModal = document.getElementById("popupDiv");
+    errorModal.style.top = `${buttonRect.bottom}px`;
+    errorModal.style.left = `${buttonRect.left}px`;
+    // const emailMessage = flowyButton.closest("div[aria-label='Email message']");
+    // const emailInfo = scrapeEmailInfo(emailMessage);
+
+    // chrome.runtime.sendMessage({
+    //   action: "emailToCalendar",
+    //   data: [emailInfo],
+    // });
   });
 }
 
