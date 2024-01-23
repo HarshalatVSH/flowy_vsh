@@ -1,11 +1,12 @@
-# ReactJS Chrome Extension
+### React 18 and TailwindCSS Supported
 
-## React 18 and TailwindCSS Supported
+Webpack Compatible
+TailwindCSS 3.0 Compatible
 
-- [x] Webpack Compatible
-- [x] TailwindCSS 3.0 Compatible
+### Installation
 
-Subscribe to my youtube channel
-https://bit.ly/manshu
+- Clone the repository and install dependencies :-
+  npm install
 
-<a href="https://www.buymeacoffee.com/batraio" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+- Start developement :-
+  npm run watch

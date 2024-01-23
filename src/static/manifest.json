@@ -1,5 +1,5 @@
 {
-  "name": "Example Gmail Extension",
+  "name": "Flowy Gmail Extension",
   "description": "Example extension showing use of the Streak Gmail SDK",
   "version": "0.1",
   "content_scripts": [
@@ -7,12 +7,21 @@
       "matches": ["https://mail.google.com/*"],
       "js": ["contentScript.js"],
       "run_at": "document_end"
+    },
+    {
+      "matches": ["https://outlook.office.com/mail/*"],
+      "js": ["outlookMail.js"]
     }
   ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Flowy",
+    "default_icon": "icon.png"
+  },
   "background": {
     "service_worker": "background.js"
   },
-  "permissions": ["scripting"],
-  "host_permissions": ["https://mail.google.com/"],
+  "permissions": ["scripting", "storage"],
+  "host_permissions": ["https://mail.google.com/", "https://app.flowyai.net/"],
   "manifest_version": 3
 }
